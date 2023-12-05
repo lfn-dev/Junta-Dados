@@ -52,6 +52,11 @@ Apenas uma das seguintes terá efeito, mais informações sobre os métodos de i
     Melhoria do método de Médias. Quadrículas na diagonal estão mais distantes, portanto recebem um peso menor. 
  -  `-m` ou `--msh`: [Modified Shepard](https://en.wikipedia.org/wiki/Inverse_distance_weighting#Modified_Shepard's_method). Usa um raio de busca para decidir quais quadrículas serão utilizadas no cálculo. Método **padrão**.
 
+Outras Opções:
+
+ - `-h` ou `--help`: mostra opções disponíveis.
+ - `-D` ou `--debug`: O arquivo de saída gerado contém apenas quadrículas que sofreram alteração. Utilizado para testar a interpolação.
+
 
 ## Compilando
 
