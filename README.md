@@ -80,7 +80,7 @@ E `<date>` precisa estar no formato `ddmmmaaaa`, ou seja:
 
 Exemplos de arquivo de entrada podem ser encontrados no diretório [exemplos/](exemplos/).
 
-Alternativamente o script [`ajusta_ctl.sh`](helper/ajusta_ctl.sh) pode ser utilizado para ajustar os arquivos `.ctl`.
+Alternativamente o script [ajusta_ctl.sh](helper/ajusta_ctl.sh) pode ser utilizado para ajustar os arquivos `.ctl`.
 
 ### Depuração
 
