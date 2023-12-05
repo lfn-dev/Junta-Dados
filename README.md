@@ -16,7 +16,7 @@ Para gerar o executável, basta utilizar o comando `make` no diretório `src/` q
 
     make all
 
-De forma alternativa, para gerar um executável de depuração (veja seção [`Modo Depuração`](#depuração) ) utilizar:
+De forma alternativa, para gerar um executável de depuração (veja seção [Modo Depuração](#depuração) ) utilizar:
 
     make debug
 
