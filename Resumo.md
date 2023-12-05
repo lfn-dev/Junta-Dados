@@ -46,7 +46,7 @@ Opções com parâmetro:
 
 
 Opções sem parâmetro:
-Apenas uma das seguintes terá efeito, mais informações sobre os métodos de interpolação ver `Interpolação.md`:
+Apenas uma das seguintes terá efeito, mais informações sobre os métodos de interpolação ver `Interpolação.tex`:
  -  `-a` ou `--avg`: Usa médias simples entre quadrículas adjacentes para calcular a transição. Método antigo.
  -  `-i` ou `--idw`: [Inverse distance weighting](https://en.wikipedia.org/wiki/Inverse_distance_weighting). Usa média ponderada pelo inverso da distância entre quadrículas adjacentes para calcular a transição.
     Melhoria do método de Médias. Quadrículas na diagonal estão mais distantes, portanto recebem um peso menor. 
