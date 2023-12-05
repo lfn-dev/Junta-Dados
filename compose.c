@@ -43,7 +43,7 @@ Missão:
 
 
 #define EXEC_MSG "primario.ctl secundario.ctl prefixo_saida"
-#define HELP_MSG "-h ou --help\tpara mostrar as opções. Main informações no arquivo LEIAME."
+#define HELP_MSG "-h ou --help\tpara mostrar as opções. Mais informações no arquivo LEIAME."
 #define OPTS_MSG "OPTIONS"\
     "\n\t--lati LAT_INI, --yi LAT_INI"\
     "\n\t--latf LAT_FIN, --yf LAT_FIN"\
@@ -51,8 +51,9 @@ Missão:
     "\n\t--lonf LON_FIN, --xf LON_FIN\n"\
     "\n\t-a, --avg\t\tUsa método de médias entre as quadriculas para interpolação."\
     "\n\t-i, --idw\t\tUsa método de peso inverso à distância (IDW) para interpolação."\
-    "\n\t-m, --msh\t\tUsa método de Shepard Modificado para interpolação."
-#define EXEM_MSG "--xi -89.5 --xf -31.5 --yi -56.5f --yf 14.5f --idw"
+    "\n\t-m, --msh\t\tUsa método de Shepard Modificado para interpolação."\
+    "\n\t-d, --debug\t\tSaída gerada contém apenas quadrículas que sofreram alteração, demais valores serão undef."
+#define EXEM_MSG "--xi -89.5 --xf -31.5 --yi -56.5f --yf 14.5f --msh"
 
 
 /* Função principal do programa, junta dados de 'p' e 's'
@@ -168,8 +169,8 @@ int main(int argc, char *argv[]) {
     char out_name[STR_SIZE] = {'\0'};
 
 
-    // por padrão usa a interpolação IDW
-    int interp_method = IDW_FLAG;
+    // por padrão usa a interpolação Modified Shepard
+    int interp_method = MSH_FLAG;
 
 
     //Lendo argumentos: https://www.gnu.org/software/libc/manual/html_node/Getopt-Long-Options.html
@@ -236,7 +237,7 @@ int main(int argc, char *argv[]) {
             case 'h':
                 fprintf(stderr,
                         OPTS_MSG
-                        "\nSe nenhum argumento for passado será usado:"
+                        "\n\nSe nenhuma opção for passada será usado:"
                         "\n\t%s "EXEC_MSG" "EXEM_MSG"\n"
                         , argv[0]);
                 return 1;
