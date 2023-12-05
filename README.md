@@ -3,8 +3,8 @@ Programa para juntar dados climaticos em pontos de grade (binário).
 No laboratório, foi utilziado para juntar dados do GPCC com dados observados.
 
 ---
-
-Este é um arquivo com o máximo de informações sobre o programa reunidas, para uma referência rápida ver `Resumo.md` e para uma explicação matemática dos métodos utilizados: `Interpolação.tex` ou `Interpolação.pdf`.
+> [!NOTE]
+> Este é um arquivo com o máximo de informações sobre o programa reunidas, para uma referência rápida ver [Resumo.md](Resumo.md) e para uma explicação matemática dos métodos utilizados: [Interpolação.tex](Interpolação.tex) ou `Interpolação.pdf`.
 
 # Funcionamento
 
@@ -42,20 +42,51 @@ Para executar o programa com valores padrão:
     ./compose -h
     ./compose --help
 
+### Tipos de arquivos aceitos
+
+São aceitos como entrada arquivos binários desde que sejam de um mesmo tipo, atualmente são aceitos:
+ 
+ - Dados diários, tipo de data no arquivo `.ctl`: `dy`.
+ - Dados mensais, tipo de data no arquivo `.ctl`: `mo`.
+ - Dados anuais, tipo de data no arquivo `.ctl`: `yr`.
+
+Além disso, os dois arquivos de entrada precisam ter o mesmo tamanho de quadrícula, bem como latitudes e longitudes inicais compatíveis.
+Caso alguma das restrições não sejam atendidas, o programa acusrá o erro encontrado.
+
 ### Formatação dos arquivos de Entrada
-Para executar a junção de dados é necessário formatar os arquivos `.ctl` de entrada.
+
+> [!IMPORTANT]
+> Para executar a junção de dados é necessário formatar os arquivos `.ctl` de entrada.
+
 Os arquivos precisam ser de apenas 1 variável e 1 nível, contendo os seguintes campos na ordem:
 
-> dset ^file.bin
-> title Título
-> undef `<value>`
-> xdef `<int_value>` linear `<value>` `<value>`
-> ydef `<int_value>` linear `<value>` `<value>`
-> zdef `<int_value>` linear 1 1
-> tdef `<int_value>` linear `<date>` `<step>`
-> vars 1
-> <name>  0  777.7  cx_chuva
+> dset `<file>`  
+> title Valor Ignorado  
+> undef `<value>`  
+> xdef `<int_value>` linear `<value>` `<value>`  
+> ydef `<int_value>` linear `<value>` `<value>`  
+> zdef `<int_value>` linear 1 1  
+> tdef `<int_value>` linear `<date>` `<step>`  
+> vars 1  
+> <name>  Restante é ignorado  
 > endvars
 
 Onde `<int_value>` são valores inteiros e `<value>` são valores em ponto flutuante. Veja [GrADS Data Descriptor File](http://cola.gmu.edu/grads/gadoc/descriptorfile.html) para mais informações.
+E `<date>` precisa estar no formato `ddmmmaaaa`, ou seja:
+
+ - `dd`: 2 dígitos para dia.
+ - `mmm`: 3 letras em minúsculo para abreviação do mês.
+ - `aaaa`: 4 dígitos para o ano.
+
+Exemplos de arquivo de entrada podem ser encontrados no diretório [exemplos/](exemplos/).
+
+Alternativamente o script [`ajusta_ctl.sh`](helper/ajusta_ctl.sh) pode ser utilizado para ajustar os arquivos `.ctl`.
+
+### Depuração
+
+Ao executar o script com a opção `-D` ou `--debug`, o arquivo de saída conterá apenas as quadrículas que tiveram seu valor modificado.
+Tipicamente serão as quadrículas de transição entre os dois conjuntos de dados. Demais valores serão marcados como undef.
+
+> [!IMPORTANT]
+> O dado gerado com a opção de depuração serve apenas para verificar o funcionamento do programa. Não faz sentido utilizá-lo como dado climatológico.
 
