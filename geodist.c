@@ -16,7 +16,7 @@ double distance(double ax, double ay, double bx, double by){
 
 /* O cálculo da distância euclidiana ao quadrado entre A e B, é bem
  * mais rápido que a distância pois não precisa calcular a raiz quadrada.
- * Útil para realizar comparações entre valores.
+ * Útil para quando basta comparar valores (comparação de maior/menor).
 **/
 double sqr_distance(double ax, double ay, double bx, double by){
     return (ax - bx)*(ax - bx) + (ay - by)*(ay - by);

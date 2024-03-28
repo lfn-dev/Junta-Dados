@@ -27,7 +27,7 @@ Missão:
 #define MIN(a,b)        (((a)<(b))?(a):(b))         //menor valor entre a e b
 #define MAX(a,b)        (((a)>(b))?(a):(b))         //maior valor entre a e b
 #ifndef BETA
-#define BETA            2                           //valor beta usado nas funções de peso
+#define BETA            2                           //Potência utilizada na interpolação (BETA maior deixa mais suave)
 #endif
 #ifndef MAX_RADIUS
 #define MAX_RADIUS      200                         //Raio de busca por quadrículas
@@ -35,8 +35,12 @@ Missão:
 #ifndef MIN_RADIUS
 #define MIN_RADIUS      100                         //Raio de influência
 #endif
+#ifndef MIN_SIZE
+#define MIN_SIZE        1.0                         //Raio de influência
+#endif
 
 // flags usadas na escolha da função de interpolação
+#define NON_FLAG 0
 #define AVG_FLAG 1
 #define IDW_FLAG 2
 #define MSH_FLAG 3
@@ -52,16 +56,18 @@ Missão:
     "\n\t-a, --avg\t\tUsa método de médias entre as quadriculas para interpolação."\
     "\n\t-i, --idw\t\tUsa método de peso inverso à distância (IDW) para interpolação."\
     "\n\t-m, --msh\t\tUsa método de Shepard Modificado para interpolação."\
+    "\n\t-n, --none\t\tApenas junta as quadrículas, sem interpolação, preferência para os dados primários."\
     "\n\t-d, --debug\t\tSaída gerada contém apenas quadrículas que sofreram alteração, demais valores serão undef."
 #define EXEM_MSG "--xi -89.5 --xf -31.5 --yi -56.5f --yf 14.5f --msh"
 
 
-/* Função principal do programa, junta dados de 'p' e 's'
- * preferencia para dados de 'p' delimitados pelo quadrado (xi,xf):(yi,yf)
+/* Função principal do programa, junta dados de 'p' (primario) e 's' (secundario)
+ * preferencia para dados de 'p' delimitados pelo quadrado xi a xf e yi a yf
  * dados faltantes de 'p' são completados com valores de 's'
- * para cada valor 's' é feita uma média com valores de 'p' adjacentes
+ * para cada valor 's' é feita cum calculo dependendo da função de interpolação escolhida
 **/
 binary_data* compose_data (binary_data* p, binary_data* s, coordtype xi, coordtype xf, coordtype yi, coordtype yf);
+
 
 /* Calcula a distancia entre quadriculas para latitudes diferentes.
  * Recebe como entrada um ctl e a função de distancia.
@@ -87,7 +93,7 @@ coordtype get_weight(int x, int y, int dx, int dy);
 // Print Error: imprime uma mensagem de erro na saída padrão de erros
 int perro (int err_cod);
 
-// Print Error: imprime uma mensagem de erro na saída padrão de erros com um comentário
+// Print Error: imprime uma mensagem de erro na saída padrão de erros com um comentário adicional
 int perro_com (int err_cod, const char* comment);
 
 
@@ -108,6 +114,10 @@ int idweight_interpolation(binary_data* dest, binary_data* p_src, binary_data* s
 /* Modified Shepard
 **/
 int mshepard_interpolation(binary_data* dest, binary_data* p_src, binary_data* s_src, int x, int y, int t);
+
+/* Nenhuma
+ * */
+int none_interpolation(binary_data* dest, binary_data* p_src, binary_data* s_src, int x, int y, int t);
 
 /* Mais informações:
  * https://en.wikipedia.org/wiki/Inverse_distance_weighting
@@ -183,22 +193,23 @@ int main(int argc, char *argv[]) {
             {"avg"  , no_argument, 0, 'a'},
             {"idw"  , no_argument, 0, 'i'},
             {"msh"  , no_argument, 0, 'm'},
+            {"none"  , no_argument, 0, 'n'},
 
             {"loni", required_argument, 0, 'w'},
             {"lonf", required_argument, 0, 'x'},
             {"lati", required_argument, 0, 'y'},
             {"latf", required_argument, 0, 'z'},
 
-            {"xi"  , required_argument, 0, 'y'},
-            {"xf"  , required_argument, 0, 'z'},
-            {"yi"  , required_argument, 0, 'w'},
-            {"yf"  , required_argument, 0, 'x'},
+            {"xi"  , required_argument, 0, 'w'},
+            {"xf"  , required_argument, 0, 'x'},
+            {"yi"  , required_argument, 0, 'y'},
+            {"yf"  , required_argument, 0, 'z'},
             {0, 0, 0, 0}
         };
         /* getopt_long stores the option index here. */
         int option_index = 0;
         
-        int opt = getopt_long (argc, argv, "aimw:x:y:z:hD",
+        int opt = getopt_long (argc, argv, "aimnw:x:y:z:hD",
                          long_options, &option_index);
         
         /* Detect the end of the options. */
@@ -213,6 +224,9 @@ int main(int argc, char *argv[]) {
                 break;
             case 'm':
                 interp_method = MSH_FLAG;
+                break;
+            case 'n':
+                interp_method = NON_FLAG;
                 break;
 
             case 'w':
@@ -284,6 +298,10 @@ int main(int argc, char *argv[]) {
     printf("Método de interpolação:");
     
     switch (interp_method){
+        case NON_FLAG:
+            printf(" **SEM** Interpolação.\n");
+            interpolation = none_interpolation;
+            break;
         case AVG_FLAG:
             interpolation = average_interpolation;
             printf(" Média de quadriculas adjacentes.\n");
@@ -335,7 +353,7 @@ int main(int argc, char *argv[]) {
 
 
 /* Junta dados de 'p' (primário) com 's' (secundário), dando preferencia para os
- * os dados primários. Quando não houver dado em 'p', faz uma média de 's' com os
+ * os dados primários. Quando não houver dado em 'p', faz uma interpolação em 's' com os
  * dados de 'p' que estão em volta. A operação apenas será realizada dentro da área
  * delimitada pelo quadrado com inicio em (xi,yi) e final em (xf,yf)
  * retorna uma estrutura com os dados já unificados
@@ -363,6 +381,9 @@ binary_data* compose_data (binary_data* p, binary_data* s, coordtype xi, coordty
         );
 
         return NULL;
+    }
+    if(MAX(p->info.x.size,s->info.x.size) > MIN_SIZE || MAX(p->info.y.size,s->info.y.size) > MIN_SIZE){ 
+        fprintf(stderr,"AVISO: Recomenda-se utilizar quadrículas de tamanho até '%.2f' para melhores resultados.\n",MIN_SIZE);
     }
 
     //testando se os grids são compatíveis
@@ -429,7 +450,7 @@ binary_data* compose_data (binary_data* p, binary_data* s, coordtype xi, coordty
         for (size_t y = 0; y < ctl.y.def; y++){
             for (size_t x = 0; x < ctl.x.def; x++){
 
-                int unchanged = 1;
+                int modified = 0;
 
                 // Detectando se o dado está dentro da área passada (bounding box)
                 coordtype x_pos = wrap_val(x * ctl.x.size + ctl.x.i,MIN_X,MAX_X);
@@ -444,10 +465,10 @@ binary_data* compose_data (binary_data* p, binary_data* s, coordtype xi, coordty
                     if(EQ_FLOAT(cp_data_val(bin_data,p,x,y,t),undef)){
 
                         // Executa a função de interpolação
-                        unchanged = !(interpolation(bin_data,p,s,x,y,t));
+                        modified = interpolation(bin_data,p,s,x,y,t);
                     }
                 }
-                if(g_debug && unchanged) set_data_val(bin_data,x,y,t,undef);
+                if(g_debug && !modified) set_data_val(bin_data,x,y,t,undef);
             }
         }
     }  
@@ -462,7 +483,7 @@ binary_data* compose_data (binary_data* p, binary_data* s, coordtype xi, coordty
 **/
 int average_interpolation(binary_data* dest, binary_data* p_src, binary_data* s_src, int x, int y, int t){
     
-    // copia o dado secundário 's_src'
+    // copia o dado secundário 's_src' no ponto (x,y,t)
     datatype sum = cp_data_val(dest,s_src,x,y,t);
     
     if(!EQ_FLOAT(sum,dest->info.undef)){
@@ -613,6 +634,12 @@ int mshepard_interpolation(binary_data* dest, binary_data* p_src, binary_data* s
 }
 
 
+int none_interpolation(binary_data* dest, binary_data* p_src, binary_data* s_src, int x, int y, int t){
+    cp_data_val(dest,s_src,x,y,t);
+    return 0;
+}
+
+
 coordtype get_weight(int x, int y, int dx, int dy){
     if (!g_dist_matrix) return 0;
 
@@ -622,6 +649,13 @@ coordtype get_weight(int x, int y, int dx, int dy){
     return g_dist_matrix[dy + 1][y];
 }
 
+/*
+* Calculamos uma matriz de distâncias previamente,
+* uma vez que as distancias entre quadriculas
+* só variam em decorrência das latitudes.
+* Assim não precisamos recalcular o mesmo valor
+* para cada quadrícula individual
+**/
 coordtype** calc_dist(info_ctl* info,double (*dist)(double,double,double,double)){
     int y = info->y.def;
     coordtype** data;
@@ -713,4 +747,3 @@ int perro_com (int err_cod, const char* comment){
     fprintf(stderr,"Abortando.\n");
     return err_cod;
 }
-

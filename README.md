@@ -1,6 +1,6 @@
 # Junta-Dados
-Programa para juntar dados climaticos em pontos de grade (binário).
-No laboratório, foi utilziado para juntar dados do GPCC com dados observados.
+Programa para juntar dados climáticos em pontos de grade (binário).
+No laboratório, foi utilizado para juntar dados do GPCC com dados observados de estação.
 
 ---
 > [!NOTE]
@@ -24,7 +24,7 @@ Caso os arquivos binários foram escritos com precisão dupla (`double`) ao inv�
 
     make double
 
-Para excluir os arquivos objetos gerados durante a compilção:
+Para excluir os arquivos objetos gerados durante a compilação:
 
     make clean
 
@@ -37,7 +37,7 @@ Para executar o programa com valores padrão:
 
     ./compose arquivo_princial.ctl arquivo_secundario.ctl prefixo_saída
     
-É possível modificar os valores padrão com opções na linha de comando. Para ver todas as opções disponĩveis:
+É possível modificar os valores padrão utilizando opções na linha de comando. Para ver todas as opções disponíveis:
 
     ./compose -h
     ./compose --help
@@ -50,15 +50,15 @@ São aceitos como entrada arquivos binários desde que sejam de um mesmo tipo, a
  - Dados mensais, tipo de data no arquivo `.ctl`: `mo`.
  - Dados anuais, tipo de data no arquivo `.ctl`: `yr`.
 
-Além disso, os dois arquivos de entrada precisam ter o mesmo tamanho de quadrícula, bem como latitudes e longitudes inicais compatíveis.
-Caso alguma das restrições não sejam atendidas, o programa acusrá o erro encontrado.
+Além disso, os dois arquivos de entrada precisam ter o mesmo tamanho de quadrícula, bem como latitudes e longitudes inicias compatíveis.
+Caso alguma das restrições não sejam atendidas, o programa acusará o erro encontrado.
 
 ### Formatação dos arquivos de Entrada
 
 > [!IMPORTANT]
 > Para executar a junção de dados é necessário formatar os arquivos `.ctl` de entrada.
 
-Os arquivos precisam ser de apenas 1 variável e 1 nível, contendo os seguintes campos na ordem:
+Os arquivos precisam ser de apenas 1 variável e 1 nível, contendo os campos na seguinte ordem:
 
 > dset `<file>`  
 > title Valor Ignorado  
@@ -89,4 +89,3 @@ Tipicamente serão as quadrículas de transição entre os dois conjuntos de dad
 
 > [!IMPORTANT]
 > O dado gerado com a opção de depuração serve apenas para verificar o funcionamento do programa. Não faz sentido utilizá-lo como dado climatológico.
-

@@ -7,10 +7,7 @@
 #define F_ERROR         (0.0001)                    //Erro permitido (float)
 #define EQ_FLOAT(a,b)   (fabs((a)-(b)) < F_ERROR)   //Se dois floats são iguais
 
-#define BETA            2       //Potência utilizada na interpolação (valor maior deixa mais suave)
-#define MAX_DIST        3       //Distância máxima de busca por quadricula (em latlon)
-
-#define EARTH_RADIUS    6371.0  //Radius of the Earth in kilometers
+#define EARTH_RADIUS    6371.0                      //Raio da terra em quilômetros
 
 
 /* Conversão de graus (latitude e longitude) para radianos*/

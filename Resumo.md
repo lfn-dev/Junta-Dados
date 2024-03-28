@@ -6,7 +6,7 @@ Fazendo uma transição entre a fonte da dado primária e a secundária.
 A **fonte primária** terá os dados copiados para o arquivo de saída, ou seja, serão **inalterados**.
 A **fonte secundária** será utilizada somente onde **não** houverem dados da fonte primária.
 Nas quadrículas de transição entre os dois conjuntos de dados, os valores da **fonte secundária** sofrerão
-alteração com o intuíto de suavizar a transição entre os dados.
+alteração com o intuito de suavizar a transição entre os dados.
 
 Como resultado será gerado um arquivo binário com seu respectivo .ctl, com as maiores dimensões possíveis, ou seja:
  - A data inicial do arquivo de saída será a menor data inicial entre os dois arquivos de entrada.
@@ -19,17 +19,17 @@ Como resultado será gerado um arquivo binário com seu respectivo .ctl, com as 
 
 # Execução básica
 
-Execute o arquivo para ver os parametros exigidos
+Execute o arquivo para ver os parâmetros exigidos
 
     ./compose
 
 São necessários pelo menos 3 parâmetros na seguinte ordem:
 
-    ./compose entrada_principal.ctl entrada_secundária.ctl nome_predixo_saída
+    ./compose entrada_principal.ctl entrada_secundária.ctl nome_prefixo_saída
 
- - Primeiro argumento: nome ou caminho do arquivo .ctl de dados principal.
- - Segundo argumento: nome ou caminho do arquivo .ctl dos dados complementares.
- - Primeiro argumento: nome ou caminho do arquivo .ctl de entrada.
+ - Primeiro argumento: nome (caminho) do arquivo .ctl de dado principal.
+ - Segundo argumento: nome (caminho) do arquivo .ctl de dado complementar.
+ - Terceiro argumento: nome (caminho) do arquivo .ctl de saída.
 
 ## Opções Disponíveis
 Para exibir um resumo das opções da linha de comando:
@@ -37,7 +37,7 @@ Para exibir um resumo das opções da linha de comando:
     ./compose -h
 
 Opções curtas têm apenas um `-` como em `-h`. Opções longas são precedidas de dois traços `--` como em `--help`.
-Opções longas podem ser encurtadas, desde que continuem únicas: `--he` é equivalente a `--help`. Todas opções:
+Opções longas podem ser encurtadas, desde que continuem únicas ex.: `--he` é equivalente a `--help`. Seguem todas as opções:
 Opções com parâmetro:
  - `--lati` ou `--yi`: Latitudade inicial. Valor padrão = -56.5.
  - `--latf` ou `--yf`: Latitudade final. Valor padrão = 14.5.
@@ -51,6 +51,7 @@ Apenas uma das seguintes terá efeito, mais informações sobre os métodos de i
  -  `-i` ou `--idw`: [Inverse distance weighting](https://en.wikipedia.org/wiki/Inverse_distance_weighting). Usa média ponderada pelo inverso da distância entre quadrículas adjacentes para calcular a transição.
     Melhoria do método de Médias. Quadrículas na diagonal estão mais distantes, portanto recebem um peso menor. 
  -  `-m` ou `--msh`: [Modified Shepard](https://en.wikipedia.org/wiki/Inverse_distance_weighting#Modified_Shepard's_method). Usa um raio de busca para decidir quais quadrículas serão utilizadas no cálculo. Método **padrão**.
+ -  `-n` ou `--none`: Nenhum. Copia quadrículas da fonte primária, se não houver, copia do dado secundário.
 
 Outras Opções:
 

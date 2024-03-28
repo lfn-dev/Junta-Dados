@@ -177,7 +177,7 @@ int write_ctl(info_ctl* info_field, char* name){
     if(!(ctl_file=fopen(name,"w"))) return 0;
 
     //nome do arquivo
-    fprintf(ctl_file,"dset ^%s\n",info_field->bin_filename);
+    fprintf(ctl_file,"dset ^%s\n",basename(info_field->bin_filename));
     
     //titulo
     fprintf(ctl_file,"title Junta Dados\n");
